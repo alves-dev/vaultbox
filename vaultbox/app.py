@@ -171,7 +171,7 @@ def _package_version() -> str:
     try:
         return package_version("vaultbox")
     except PackageNotFoundError:
-        return "0.1.0"
+        return "0.2.0"
 
 
 app = create_app()
