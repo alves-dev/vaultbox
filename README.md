@@ -1,5 +1,7 @@
 # Vaultbox
 
+![Vaultbox](vaultbox/static/vaultbox-mark.png)
+
 Vaultbox is a lightweight, stateless secrets encryption service powered by [SOPS](https://github.com/getsops/sops) and [age](https://github.com/FiloSottile/age). It provides a REST API and web interface for secure dotenv management.
 
 ## Goals
@@ -23,9 +25,46 @@ Vaultbox is intended to operate without persisting private keys, credentials, or
 
 This repository is initialized with a Python-focused `.gitignore`; only example configuration files containing placeholders should be committed.
 
-## Status
+## Quick start
 
-The project is being initialized. Implementation details and deployment documentation will be added as the service evolves.
+Requirements: Docker with Compose (for the container) or Python 3.11+ and SOPS/age (for a direct local run).
+
+Generate an age identity and recipient, then create the runtime values:
+
+```bash
+age-keygen -o age.key
+chmod 600 age.key
+grep '^# public key:' age.key
+```
+
+For Docker, copy `.env.vaultbox.example` to `.env.vaultbox`, set the values (including the complete contents of `age.key`), then run `docker compose up --build -d`. The service is available at `http://localhost:8000`; set `VAULTBOX_COOKIE_SECURE=true` when it is behind HTTPS. The image bundles pinned SOPS and age releases and verifies their release checksums during build. Startup performs a real SOPS+age round-trip and the container exits with an informative log if configuration or key material is invalid.
+
+The health endpoint is `GET /health`. There is no readiness endpoint: a running container has already passed startup validation. API documentation is disabled by default; set `VAULTBOX_ENABLE_DOCS=true` only for local or controlled environments.
+
+The repository includes a GitHub Actions workflow that builds the image on pull requests and publishes tagged/`main` builds to GitHub Container Registry (`ghcr.io`) on pushes. The published image can be pulled with `docker pull ghcr.io/<owner>/<repository>:main`.
+
+`VAULTBOX_API_KEYS` is a JSON array of independent tokens. For safer configuration, entries may be `sha256:<64-hex-digest>` instead of plaintext tokens; calculate the digest with `printf %s "$TOKEN" | sha256sum`. The web login is independent from API keys.
+
+API example:
+
+```bash
+curl -fsS -X POST http://localhost:8000/api/v1/encrypt \
+  -H "X-API-Key: $VAULTBOX_API_KEY" -H 'Content-Type: text/plain' \
+  --data-binary $'A=1\n# comment\n' > .env.enc
+curl -fsS -X POST http://localhost:8000/api/v1/decrypt \
+  -H "X-API-Key: $VAULTBOX_API_KEY" -H 'Content-Type: text/plain' \
+  --data-binary @.env.enc
+```
+
+Para simular localmente o fluxo completo pela API, altere somente `VAULTBOX_API_KEY` no helper e execute:
+
+```bash
+./.dev/vaultbox-local.sh
+```
+
+Use `./deploy.sh` from a stack directory containing `.env.enc`; set `VAULTBOX_API_KEY` only in the server environment. It writes `.env` atomically and runs Compose only after a successful decrypt. Keep `.env`, the age identity, API keys and session secret out of Git. Back up the age identity securely: losing it makes existing ciphertext unrecoverable.
+
+Run tests with `pip install -e '.[test]' && pytest`. The tests use a fake SOPS executable for deterministic API coverage; the Docker image validates the real SOPS+age binaries and performs a startup round-trip before serving traffic.
 
 ## License
 

@@ -1,0 +1,18 @@
+services:
+  vaultbox:
+    build:
+      context: .
+      platforms: [linux/amd64]
+    image: vaultbox:local
+    env_file:
+      - path: .env.vaultbox
+        required: false
+    ports:
+      - "8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=16m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+    restart: unless-stopped

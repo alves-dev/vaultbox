@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+!.env.vaultbox.example
 *.secret
 *.secrets
 *.key
@@ -32,6 +33,9 @@ build/
 .eggs/
 
 # Tooling and OS
+.agents/
+.aws/
+.codex/
 .DS_Store
 .idea/
 .vscode/
