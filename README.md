@@ -43,7 +43,7 @@ For Docker, copy `.env.vaultbox.example` to `.env.vaultbox`, set the values (inc
 
 The health endpoint is `GET /health`. There is no readiness endpoint: a running container has already passed startup validation. API documentation is disabled by default; set `VAULTBOX_ENABLE_DOCS=true` only for local or controlled environments.
 
-The repository includes a GitHub Actions workflow that builds the image on pull requests and publishes tagged/`main` builds to GitHub Container Registry (`ghcr.io`) on pushes. The published image can be pulled with `docker pull ghcr.io/<owner>/<repository>:main`.
+The repository includes a GitHub Actions workflow that builds the image on pull requests and publishes tagged/`main` builds to GitHub Container Registry (`ghcr.io`) on pushes. Published images support `linux/amd64` and `linux/arm64`, so the same image can run on x86 servers and 64-bit Raspberry Pi hosts. The published image can be pulled with `docker pull ghcr.io/<owner>/<repository>:main`.
 
 `VAULTBOX_API_KEYS` is a JSON array of independent tokens. For safer configuration, entries may be `sha256:<64-hex-digest>` instead of plaintext tokens; calculate the digest with `printf %s "$TOKEN" | sha256sum`. The web login is independent from API keys.
 

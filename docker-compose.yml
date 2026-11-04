@@ -2,7 +2,6 @@ services:
   vaultbox:
     build:
       context: .
-      platforms: [linux/amd64]
     image: vaultbox:local
     env_file:
       - path: .env.vaultbox
