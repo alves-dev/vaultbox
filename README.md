@@ -1,6 +1,8 @@
 # Vaultbox
 
-![Vaultbox](vaultbox/static/vaultbox-mark.png)
+<p align="center">
+  <img src="vaultbox/static/vaultbox-mark.png" alt="Vaultbox" width="333" height="333">
+</p>
 
 Vaultbox is a lightweight, stateless secrets encryption service powered by [SOPS](https://github.com/getsops/sops) and [age](https://github.com/FiloSottile/age). It provides a REST API and web interface for secure dotenv management.
 
