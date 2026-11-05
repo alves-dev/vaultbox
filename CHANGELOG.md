@@ -18,3 +18,9 @@ Todas as mudanças relevantes do Vaultbox serão documentadas neste arquivo.
 ### Verificação
 
 - Suíte de testes validada com 3 testes aprovados.
+
+## [0.1.0] - 2026-11-03
+
+### Criado
+
+- Primeira versão do Vaultbox.
